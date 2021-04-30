@@ -1,1 +1,2 @@
-alias profile=./profile.applescript
+alias profile=$(pwd)/profile.applescript
+
