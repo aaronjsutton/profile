@@ -28,10 +28,17 @@ const TERMINAL_PREFERENCES_PLIST = "~/Library/Preferences/com.apple.Terminal.pli
  *
  * @returns a string of comma-separated, full profile names.
  */
-function get() {
+function available() {
   const prefs = System.propertyListFiles.byName(TERMINAL_PREFERENCES_PLIST)
   // NSDictionary bridging to access to record keys.
   return $.NSDictionary.dictionaryWithDictionary(prefs.value()['Window Settings']).allKeys
+}
+
+/**
+ * Get the currently set profile.
+ */
+function get() {
+  return Terminal.windows[0].currentSettings.name()
 }
 
 /**
@@ -51,6 +58,7 @@ function set(name) {
  * @param {Array} color - A three element array representing an RGB color.
  */
 function background(color) {
+  if (color.length == 0) { return Terminal.windows[0].currentSettings.backgroundColor() }
   Terminal.windows[0].currentSettings.backgroundColor = color
 }
 
@@ -93,9 +101,10 @@ function run(fncall) {
   if (fncall.length == 0) { throw new Error('No command given') }
   let [command, ...args] = fncall
   switch (command.toUpperCase()) {
-    case 'GET': return get(args); break;
+    case 'GET': return get(); break;
+    case 'AVAILABLE': return available(); break;
     case 'SET': set(args); break;
-    case 'BACKGROUND': background(args); break;
+    case 'BACKGROUND': return background(args); break;
     case 'TEXT': text(args); break;
     case 'BOLDTEXT': boldText(args); break;
     default: throw new Error(`Unknown command: "${command.toUpperCase()}"`);
