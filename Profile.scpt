@@ -91,7 +91,7 @@ function boldText(color) {
  */
 function run(fncall) {
   if (fncall.length == 0) { throw new Error('No command given') }
-  [command, ...args] = fncall
+  let [command, ...args] = fncall
   switch (command.toUpperCase()) {
     case 'GET': return get(args); break;
     case 'SET': set(args); break;
