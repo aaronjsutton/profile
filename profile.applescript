@@ -48,10 +48,3 @@ on setProfile(profile)
     set current settings of first window to settings set profile
   end tell
 end setProfile
-
-on fadeBackgroundColor(toColor)
-  tell application "Terminal"
-    set theColor to background color of first window
-    log theColor
-  end tell
-end fadeBackgroundColor
