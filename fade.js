@@ -1,1 +1,0 @@
-const Terminal = Application("Terminal");

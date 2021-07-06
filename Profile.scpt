@@ -4,7 +4,7 @@
  *
  * This library exposes a few useful functions that bridge the
  * gap between the shell environment and actions normally accessible
- * via Open Scripting Architecture. The aim is modularize tasks from
+ * via Open Scripting Architecture. The aim is modularize
  * as much as possible, to expose a thin surface layer for interacting
  * with the user's terminal application from a better environment.
  *
@@ -20,34 +20,48 @@ const System = Application("System Events");
 const TERMINAL_PREFERENCES_PLIST = "~/Library/Preferences/com.apple.Terminal.plist"
 
 /** 
- * Get the names all currently installed Terminal profiles.
+ * Get information about available profiles.
  *
- * This method uses System Events Property List Suite under the hood,
- * and there is a non-trivial performance hit incurred when calling this method.
+ * There is a non-trivial performance hit incurred when calling this method.
  * Keeping a cache of these values is recommended.
  *
- * @returns a string of comma-separated, full profile names.
+ * This command can be called in a few forms:
+ *
+ * * No arguments will yield a comma-separated list of all profiles available.
+ * * Two arguments can be used to get properties of a particular settings set.
+ *
+ *  For example: 
+ *    
+ *    ... settings cobalt2 backgroundColor
+ *
+ *  Will yield a comma-separated string of the RGB components of cobalt2's
+ *  background color.
+ *
+ *  A single argument form is not considered valid.
+ *
+ * @returns a string, format dependent on arguments
  */
-function available() {
-  const prefs = System.propertyListFiles.byName(TERMINAL_PREFERENCES_PLIST)
-  // NSDictionary bridging to access to record keys.
-  return $.NSDictionary.dictionaryWithDictionary(prefs.value()['Window Settings']).allKeys
+function settings(args) {
+  let sets = Terminal.settingsSets
+  if (args.length == 0) {
+    var names = []
+    for (let i = 0; i < sets.length; i++) {
+      names[i] = sets[i]().name();
+    }
+    return names
+  } 
+  return sets.byName(args[0])[args[1]]()
 }
 
 /**
- * Get the currently set profile.
- */
-function get() {
-  return Terminal.windows[0].currentSettings.name()
-}
-
-/**
- * Set the Terminal profile for the current window. Profile names appear to be case-insensitive,
- * but must match the full name of the installed profile.
+ * Get or set the Terminal profile for the current window. 
+ * Profile names are case-insensitive, but must match the full name of the installed profile.
  * @param {String} name - name of the profile
  */
-function set(name) {
-  Terminal.windows[0].currentSettings = name
+function profile(name) {
+  if (name.length == 0) { return Terminal.windows[0].currentSettings.name() }
+  let set = Terminal.settingsSets.byName(name);
+  Terminal.windows[0].currentSettings = set
 }
 
 /**
@@ -69,6 +83,7 @@ function background(color) {
  * @see background
  */
 function text(color) {
+  if (color.length == 0) { return Terminal.windows[0].currentSettings.normalTextColor() }
   Terminal.windows[0].currentSettings.normalTextColor = color
 }
 
@@ -79,6 +94,7 @@ function text(color) {
  * @see background
  */
 function boldText(color) {
+  if (color.length == 0) { return Terminal.windows[0].currentSettings.boldTextColor() }
   Terminal.windows[0].currentSettings.boldTextColor = color
 }
 
@@ -91,7 +107,7 @@ function boldText(color) {
  * the primary method for calling out to JXA functions will be through the `osascript`
  * binary. For example, set a profile named 'cobal2' from a shell script:
  *
- *  osascript -l JavaScript Profile.scpt set cobal2
+ *  osascript -l JavaScript Profile.scpt set cobalt2
  *
  * Execute a command by passings arguments to the script. The first argument is the command
  * itself, and any following arguments will be passing along to the command function.
@@ -101,9 +117,8 @@ function run(fncall) {
   if (fncall.length == 0) { throw new Error('No command given') }
   let [command, ...args] = fncall
   switch (command.toUpperCase()) {
-    case 'GET': return get(); break;
-    case 'AVAILABLE': return available(); break;
-    case 'SET': set(args); break;
+    case 'SETTINGS': return settings(args); break;
+    case 'PROFILE': return profile(args); break;
     case 'BACKGROUND': return background(args); break;
     case 'TEXT': text(args); break;
     case 'BOLDTEXT': boldText(args); break;
