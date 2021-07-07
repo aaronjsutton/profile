@@ -17,8 +17,9 @@ _profile() {
 
   # populate the datafile cache if it does not exist
   if [ ! -f "$datafile" ]; then
-    current=$(_osa_exec "get"  | tr '[:upper:]' '[:lower:]')
-    _osa_exec available \
+    current=$(_osa_exec profile | tr '[:upper:]' '[:lower:]')
+    _osa_exec settings \
+      # | sed -e "s/^([A-Za-z]+)$/\0 .../" \ <- TODO: sed stuff for stashing the color data also
     | sed -e 's/,/\n/g' -e 's/ /-/g' \
     | tr "[:upper:]" "[:lower:]" \
     | sed -e "s/\(${current}\)/*\1/" > "$datafile"
@@ -38,6 +39,7 @@ _profile() {
 }
 
 _set_profile() {
+  # TODO fade api
   _osa_exec "profile" "$1"
 }
 

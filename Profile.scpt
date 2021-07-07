@@ -48,7 +48,7 @@ function settings(args) {
     for (let i = 0; i < sets.length; i++) {
       names[i] = sets[i]().name();
     }
-    return names
+    return names.join(",")
   } 
   return sets.byName(args[0])[args[1]]()
 }
@@ -100,6 +100,7 @@ function boldText(color) {
 
 /**
  * Run handler for the Profile library.
+ *
  * JXA has little support for any library/modularity functionality,
  * so the purpose of this run handler will be to enable communication with
  * JXA using a small and simple "command language", passing data in via arguments, and out
