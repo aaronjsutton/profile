@@ -16,14 +16,7 @@ _profile() {
   datafile="${_PROFILE_DATA:-$HOME/.term_profiles}" 
 
   # populate the datafile cache if it does not exist
-  if [ ! -f "$datafile" ]; then
-    current=$(_osa_exec profile | tr '[:upper:]' '[:lower:]')
-    _osa_exec settings \
-      # | sed -e "s/^([A-Za-z]+)$/\0 .../" \ <- TODO: sed stuff for stashing the color data also
-    | sed -e 's/,/\n/g' -e 's/ /-/g' \
-    | tr "[:upper:]" "[:lower:]" \
-    | sed -e "s/\(${current}\)/*\1/" > "$datafile"
-  fi;
+  if [ ! -f "$datafile" ]; then _gen_profile_cache > "$datafile"; fi;
    
   while [ "$1" ]; do case "$1" in
     -h|--help)
@@ -35,7 +28,7 @@ _profile() {
     *) break
   esac; [ "$#" -gt 0 ] && shift; done
   # print the current profile if nothing left to do
-  grep "^\*.*" < "$datafile" | cut -c2- 
+  grep "^\*.*" < "$datafile" | cut -c2- | cut -d':' -f1
 }
 
 _set_profile() {
@@ -45,6 +38,24 @@ _set_profile() {
 
 _osa_exec () {
   osascript -l "$_OSA_LANG" "$_PROFILE_SCRIPT_LIBRARY" "$@"
+}
+
+_gen_profile_cache () {
+    echo "Generating profile cache, this may take a few seconds" >&2
+    current=$(_osa_exec profile | tr '[:upper:]' '[:lower:]')
+
+    all=$(_osa_exec settings | sed -e 's/,/\n/g')
+
+    echo "$all" | while read -r line; do
+       
+      name=$(echo "$line" \
+      | sed -e 's/ /-/g' \
+      | tr "[:upper:]" "[:lower:]" \
+      | sed -e "s/\(${current}\)/*\1/")
+
+      colors=$(echo "$(_osa_exec settings "$line" backgroundColor):$(_osa_exec settings "$line" normalTextColor)" | sed 's/ //g')
+      echo "$name:$colors"
+    done
 }
 
 # locate the JXA script file
