@@ -1,0 +1,39 @@
+.TH "PROFILE" "1" "July 2021" "profile" "User Commands"
+.SH NAME
+profile \- change your terminal profile
+.SH SYNOPSIS
+.B profile 
+[\fB\-slx\fR]
+[\fIname\fR]
+.SH AVAILABILITY
+.PP
+bash, zsh
+.SH DESCRIPTION
+.PP
+\fBprofile\fR changes your macOS terminal theme from the shell.
+.PP
+If setting a new profile value, \fBprofile\fR will transition the 
+background and text colors of your terminal to that of the new profile.
+.SH OPTIONS
+.TP
+.BR \-s\  \fINAME\fR
+Set the profile of the terminal.
+.TP
+.BR \-l
+List all profiles installed in the terminal.
+.TP
+.BR \-x
+Clear the cache of profile data. 
+This option only needs to be used when installing or removing
+profiles within Terminal preferences.
+.SH BUGS
+Due to limitations within the \fIOpen Scripting Architecture (OSA)\fR for macOS,
+there are a couple caveats to \fBprofile\fR:
+.IP \[bu] 2
+Internally, \fBprofile\fR uses \fIOSA\fR to work with Terminal settings, and suffers 
+in performance as a result. Caching allows most of these performance issues to 
+be resolved by avoiding calls to OSA unless necessary. The fade engine must call
+OSA each time it updates the background color, so the transition duration is somewhat
+long, and cannot be shortened.
+.IP \[bu]
+\fBprofile\fR is dependent on the \fIosascript\fR binary, and works only for Terminal.app on macOS
