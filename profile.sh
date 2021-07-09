@@ -14,7 +14,11 @@ _profile() {
 
   # populate the __profile_datafile cache if it does not exist
   if [ ! -f "$__profile_datafile" ]; then __profile_cache > "$__profile_datafile"; fi;
-   
+
+  # mark on every call in case user updated via inspector panel
+  local current=$(__profile_osa_exec profile | tr '[:upper:]' '[:lower:]')
+  __profile_mark "$current"
+
   while [ "$1" ]; do case "$1" in
     -h|--help)
       echo "${_PROFILE_CMD:-profile} [-lsx] <name>" >&2; return;;
