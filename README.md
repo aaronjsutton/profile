@@ -10,7 +10,9 @@ very own shell. A fade function
 ## Installation
 Clone this repo, and source the script with a line similar to:
 
+```
   source /your/path/to/profile.sh
+```
 
 in your `$HOME/.bashrc` or `$HOME/.zshrc`
 
@@ -31,14 +33,20 @@ the source.
 
 Set the profile named "cobalt2":
 
+```
   profile -s cobalt2
+```
 
 List available profiles:
 
+```
   profile -l
+```
 
 Clear the profile cache:
-  
+
+```
   profile -x
+```
 
 Use the `-x` flag any time you install or remove profiles from your Terminal.
