@@ -60,3 +60,16 @@ being changed via external events such as using the inspector. The current value
 reflects only the current window. This allows for a single cache file to work for any number 
 of Terminal window instances.
 
+### Caveats
+
+Just a couple things to note:
+
+- OSA scripts are not really fast, at all, so the fade engine is capped a certain speed, since OSA
+is invoked on every call to background change. The end result is a kind of slower fade, but I still think
+it looks pretty good. This can be disabled easily if it wastes time.
+
+- `Profile.scpt` is an attempt to make a sane*-ish* surface out of the hell-swamp that is AppleScript documentation. 
+It's written in JavaScript for automation (JXA), since I find that nicer than terse AppleScript, and types play a little bit nicer.
+The bridge between these two is really just passing along data through output and subshells ... (ick). There could
+be some complex Objective-C way to put this together, but that's beyond the scope of the project. Just make sure that
+`profile` knows how to find the script library file :smile:
