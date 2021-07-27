@@ -3,7 +3,7 @@
 > A missing command for macOS. Set your terminal profile from the comfort of your
 very own shell.
 
-![Terminal fade demo](https://github.com/aaronjsutton/profile/blob/master/media/demo.gif)
+![Terminal fade demo](https://github.com/aaronjsutton/profile/blob/main/media/demo.gif)
 
 As a bonus, `profile` makes use of Terminal background color to build-in a custom fade function,
 so transitioning between profiles is less jarring on the eyes during those late-night sessions.
